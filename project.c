@@ -1,13 +1,5 @@
 #include "spimcore.h"
 
-/*
-Coded by:
-    Jan Darge
-    Jason Rock
-*/
-
-/* ALU */
-/* 10 Points */
 void ALU (unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Zero) {
     // PROCESS ALU OPCODE
     switch (ALUControl) {
@@ -41,8 +33,6 @@ void ALU (unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Ze
     *Zero = (*ALUresult == 0) ? 1 : 0;
 }
 
-/* instruction fetch */
-/* 10 Points */
 int instruction_fetch (unsigned PC, unsigned *Mem, unsigned *instruction) {
     if ((PC > 0xFFFC) || (PC % 4 != 0)) {
         return 1;
@@ -53,8 +43,6 @@ int instruction_fetch (unsigned PC, unsigned *Mem, unsigned *instruction) {
     return 0;
 }
 
-/* instruction partition */
-/* 10 Points */
 void instruction_partition (unsigned instruction, unsigned *op, unsigned *r1, unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec) {
     *op = (instruction & 0xFC000000) >> 26;
     *r1 = (instruction & 0x3E00000) >> 21;
@@ -65,8 +53,6 @@ void instruction_partition (unsigned instruction, unsigned *op, unsigned *r1, un
     *jsec = (instruction & 0x3FFFFFF);
 }
 
-/* instruction decode */
-/* 15 Points */
 int instruction_decode (unsigned op, struct_controls *controls) {
 
     controls->Jump = 0;
@@ -137,23 +123,17 @@ int instruction_decode (unsigned op, struct_controls *controls) {
     return 0;
 }
 
-/* Read Register */
-/* 5 Points */
 void read_register (unsigned r1, unsigned r2, unsigned *Reg, unsigned *data1, unsigned *data2) {
     *data1 = Reg[r1];
     *data2 = Reg[r2];
 }
 
-/* Sign Extend */
-/* 10 Points */
 void sign_extend (unsigned offset, unsigned *extended_value) {
     unsigned negative = offset >> 15;
 
     *extended_value = (negative) ? (offset | 0xFFFF0000) : (offset & 0x0000FFFF);
 }
 
-/* ALU operations */
-/* 10 Points */
 int ALU_operations (unsigned data1, unsigned data2, unsigned extended_value, unsigned funct, char ALUOp, char ALUSrc, unsigned *ALUresult, char *Zero) {
 
     char ALUControl = 0;
@@ -202,8 +182,6 @@ int ALU_operations (unsigned data1, unsigned data2, unsigned extended_value, uns
     return 1;
 }
 
-/* Read / Write Memory */
-/* 10 Points */
 int rw_memory (unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, unsigned *memdata, unsigned *Mem) {
     if ((!MemRead && !MemWrite) || (MemRead && MemWrite)) {
         // No memory operations occurring. Have a nice day!
@@ -225,8 +203,6 @@ int rw_memory (unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, 
     return 0;
 }
 
-/* Write Register */
-/* 10 Points */
 void write_register (unsigned r2, unsigned r3, unsigned memdata, unsigned ALUresult, char RegWrite, char RegDst, char MemtoReg, unsigned *Reg) {
     if (RegWrite) {
         unsigned temp = (RegDst) ? r3 : r2;
@@ -234,8 +210,6 @@ void write_register (unsigned r2, unsigned r3, unsigned memdata, unsigned ALUres
     }
 }
 
-/* PC update */
-/* 10 Points */
 void PC_update (unsigned jsec, unsigned extended_value, char Branch, char Jump, char Zero, unsigned *PC) {
 
     *PC += 4;
