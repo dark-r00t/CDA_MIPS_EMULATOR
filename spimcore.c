@@ -66,6 +66,7 @@ unsigned memdata;
 
 
 unsigned *Nreg(char *name) {
+        
     int i;
 
     for (i = 0; i < REGSIZE + 4; i++) {
@@ -79,6 +80,7 @@ unsigned *Nreg(char *name) {
 }
 
 void Init(void) {
+        
     memset(Reg, 0, (REGSIZE + 4) * sizeof(unsigned));
     NREG("pc") = PCINIT;
     NREG("sp") = SPINIT;
@@ -87,6 +89,7 @@ void Init(void) {
 
 
 void DisplayControlSignals(void) {
+        
     fprintf(stdout, "\tControl Signals: %0x%0x%0x%0x%03x%0x%0x%0x%0x\n",
             controls.RegDst,
             controls.Jump,
@@ -139,10 +142,9 @@ void Step(void) {
 }
 
 void DumpReg(void) {
-    int i;
     char bb[] = "     ";
 
-    for (i = 0; i < REGSIZE + 4; i++) {
+    for (int i = 0; i < REGSIZE + 4; i++) {
         fprintf(stdout, "%s %s%s %08x%s",
                 (i % 4 == 0) ? Redir : "",
                 RegName[i], bb + strlen(RegName[i]) * sizeof(char),
@@ -237,9 +239,11 @@ void Loop(void) {
             case 'g': case 'G':
                 DisplayControlSignals();
                 break;
+            
             case 'r': case 'R':
                 DumpReg();
                 break;
+            
             case 'm': case 'M':
                 if ((tp = strtok(NULL, " ,.\t\n\r")) == NULL) {
                     DumpMemHex(0, MEMSIZE);
@@ -251,6 +255,7 @@ void Loop(void) {
                         DumpMemHex(sc, (int) strtoul(tp, (char **) NULL, 10));
                     }
                 } break;
+            
             case 's': case 'S':
                 if ((tp = strtok(NULL, " ,.\t\n\r")) == NULL)
                     sc = 1;
@@ -260,14 +265,17 @@ void Loop(void) {
                     Step();
                 fprintf(stdout, "%s step\n", Redir);
                 break;
+            
             case 'c': case 'C':
                 while (!Halt)
                     Step();
                 fprintf(stdout, "%s cont\n", Redir);
                 break;
+            
             case 'h': case 'H':
                 fprintf(stdout, "%s %s\n", Redir, Halt ? "true" : "false");
                 break;
+            
             case 'p': case 'P':
                 rewind(FP);
                 sc = 0;
@@ -275,9 +283,11 @@ void Loop(void) {
                     if (fgets(Buf, BUFSIZE, FP))
                         fprintf(stdout, "%s % 5d  %s", Redir, sc++, Buf);
                 } break;
+            
             case 'i': case 'I':
                 fprintf(stdout, "%s %d\n", Redir, MEMSIZE);
                 break;
+            
             case 'd': case 'D':
                 if ((tp = strtok(NULL, " ,.\t\n\r")) == NULL) {
                     fprintf(stdout, "%s invalid cmd\n", Redir);
@@ -293,11 +303,13 @@ void Loop(void) {
                 
                 DumpHex(sc, (int) strtoul(tp, (char **) NULL, 10));
                 break;
+            
             case 'x': case 'X': case 'q': case 'Q':
                 fprintf(stdout, "%s quit\n", Redir);
                 if (Redir == (char *) RedirPrefix) {
                     fprintf(stdout, "%s%s\n", Redir, Redir);
                 } return;
+            
             default:
                 fprintf(stdout, "%s invalid cmd\n", Redir);
                 break;
